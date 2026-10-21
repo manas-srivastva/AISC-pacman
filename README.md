@@ -67,6 +67,8 @@ Each ghost operates under a Finite-State Machine with distinct states: `CHASE`, 
 - **Ambusher (Pink / Pinky)**: Anticipates player trajectory, targeting 3–4 tiles ahead along Pac-Man's heading vector.
 - **Guard (Orange / Clyde)**: Patrols vital junctions, keys, or level exits; shifts into pursuit when Pac-Man enters its perimeter.
 - **Patrol / Random (Cyan / Inky)**: Explores corridors through controlled stochastic arbitration at intersections.
+- Ghosts transition between `CHASE`, `PATROL`, `FLEE`, and `SEARCH`; A* selects routes through walkable maze tiles, while BFS provides a shortest-path baseline and distance maps for fleeing.
+- Power pellets temporarily put ghosts into `FLEE`; colliding with a fleeing ghost awards points instead of costing a life.
 
 ### C. Fuzzy Logic Controller (Soft Computing)
 A Mamdani Fuzzy Inference System determines real-time ghost **Aggression Scores** ($0 - 100$):
@@ -99,7 +101,7 @@ ai-pacman/
 ├── settings.py             # Constants, speeds, dimensions, color palettes
 ├── maze.py                 # Grid representation, wall checks, dots & pellets
 ├── pacman.py               # Player entity, corner snapping, mouth animation
-├── ghost.py                # Ghost agents, movement arbitration, collision bounds
+├── ghost.py                # Ghost archetypes, FSM behavior, movement and collisions
 ├── game_state.py           # Game loop logic, scoring, lives, state machine
 ├── renderer.py             # Geometric arcade renderer, HUD, modal overlays
 ├── pathfinding.py          # BFS and A* search algorithm implementations
