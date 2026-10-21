@@ -1,6 +1,9 @@
 """
 game_state.py - Core game loop state, scoring, lives, and collision resolution.
 """
+
+
+  
 from typing import List, Optional
 import pygame
 from settings import (
