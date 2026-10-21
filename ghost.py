@@ -44,6 +44,10 @@ class Ghost:
         self.spawn_row = row
         self.col = col
         self.row = row
+        self.spawn_col = col
+        self.spawn_row = row
+        self.col = col
+        self.row = row
         self.x = (col + 0.5) * TILE_SIZE
         self.y = (row + 0.5) * TILE_SIZE
         self.current_dir: Tuple[int, int] = Direction.LEFT
@@ -71,6 +75,7 @@ class Ghost:
             Direction.LEFT,
             Direction.RIGHT,
         ):
+
             dx, dy = direction
             if maze.is_walkable(current_col + dx, current_row + dy):
                 legal.append(direction)
@@ -197,6 +202,12 @@ class Ghost:
         )
 
         if at_center:
+            # Snap to center
+            self.x = tile_center_x
+            self.y = tile_center_y
+            self.col = current_col
+            self.row = current_row
+
             self.x = tile_center_x
             self.y = tile_center_y
             self.col = current_col
@@ -238,6 +249,20 @@ class Ghost:
                 choices = [direction for direction in legal if direction != reverse]
                 self.current_dir = random.choice(choices or legal) if legal else Direction.NONE
 
+            legal_dirs = self.get_legal_directions(self.col, self.row, maze)
+            opposite = Direction.OPPOSITES.get(self.current_dir)
+            forward_dirs = [direction for direction in legal_dirs if direction != opposite]
+
+            if forward_dirs:
+                if self.current_dir in forward_dirs and random.random() < 0.65:
+                    pass
+                else:
+                    self.current_dir = random.choice(forward_dirs)
+            elif legal_dirs:
+                self.current_dir = legal_dirs[0]
+            else:
+                self.current_dir = Direction.NONE
+
         dx, dy = self.current_dir
         if dx or dy:
             target_x = self.x + dx * self.speed
@@ -245,6 +270,11 @@ class Ghost:
             next_col = int(target_x // TILE_SIZE)
             next_row = int(target_y // TILE_SIZE)
             if maze.is_walkable(next_col, next_row):
+                self.x = target_x
+                self.y = target_y
+            else:
+                self.current_dir = Direction.NONE
+
                 self.x = target_x
                 self.y = target_y
             else:
@@ -278,3 +308,4 @@ class Ghost:
         self.speed = GHOST_SPEED
         self.patrol_index = 0
         self.last_seen_player = None
+
